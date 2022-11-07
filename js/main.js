@@ -65,7 +65,7 @@ function renderKittenList(kittenDataList) {
 
 //7.Ejecutar función para renderizar el conunto de gatitos dentrol del ul. Ejecutamos la función para que en cada loop recoja los elementos HTML li para cada gato
 
-
+renderKittenList(kittenDataList);
 
 
 
@@ -122,24 +122,20 @@ const labelMessageError = document.querySelector(".js-label-error");
 
 //1.Función para añadir un nuevo gatito
 function addNewKittenPlus () {
-    debugger
-    
+    //debugger
     const valueDesc = inputDesc.value;
     const valuePhoto = inputPhoto.value;
     const valueName = inputName.value;
     const valueRace = inputRace.value;
     const newKittenDataObject = getKittenData(valuePhoto, valueName, valueRace, valueDesc);
-    const html = renderKitten(newKittenDataObject);
-    listElement.innerHTML += html;
+    //const html = renderKitten(newKittenDataObject);
+    //listElement.innerHTML += html;
 
     //Ejercicio 2.11
     kittenDataList.push(newKittenDataObject); 
     cancelNewKitten ();
-    console.log(kittenDataList);
-    
-
-   
-    
+    renderKittenList(kittenDataList);
+    console.log(kittenDataList);    
 }
 
 //2.Función para validar el formulario
@@ -217,7 +213,8 @@ const inputSearchDesc = document.querySelector(".js_in_search_desc");
 
 //2.Filtrar por descripción (lección 2.9 bucles)
 
-function filterKitten() {
+function filterKitten(event) {
+    event.preventDefault();
     // Iniciar una variable content vacía, que después de verificar todas las condiciones, será lo que se convierta en el innerHTML de la ul
     let html = "";
     //Create variables for each input value once we have clicked in Buscar. Añadir lowercase para forzar lo que introduzca el usuario a minúsculas
@@ -229,24 +226,38 @@ function filterKitten() {
     }else if (descrSearchText !== "" || raceSearchText !== "") {
         // Create a condition, if it includes the word in search input, add to content. Lowercase también en la descripción del gatito, para compararlo con el valor introducido que hemos forzado a minúsculas
         //Lección 2.12: sustituir bucle por filter
-        for (const kitten of kittenDataList) {
+        const kittenListFiltered = kittenDataList
+        .filter((kitten)=>kitten.desc.toLowerCase().includes(descrSearchText))
+        .filter((kitten)=>kitten.race.toLowerCase().includes(raceSearchText));
+        //.map((kitten)=> html += renderKitten(kitten));
+        console.log(filterKitten);
+        console.log(html);
+        //debugger;
+        renderKittenList(kittenListFiltered);
+        //console.log(html);
+        //renderKittenList(kittenDataList);
+        }
+        /*for (const kitten of kittenDataList) {
             if (kitten.desc.toLowerCase().includes(descrSearchText) && kitten.race.toLowerCase().includes(raceSearchText)) {
                 html += renderKitten(kitten);
             }
+        }*/
+        /*function renderKittenList(kittenDataList) {
+        let html = "";
+        for (const kitten of kittenDataList) {
+        html += renderKitten(kitten);
         }
+        listElement.innerHTML = html;
+        }*/
         if (html === ''){
             html = 'No existe ningún gatito que se ajuste a tu búsqueda.';  
         }
-    }
-    // Inner HTML of the ul = content result form previous conditions
+         // Inner HTML of the ul = content result form previous conditions
     listElement.innerHTML = html;
 }
+    
     
 
 //3.Event listener. Botón buscar
 
-searchButton.addEventListener("click", (event) => {
-    event.preventDefault();
-    filterKitten();
-});
-renderKittenList(kittenDataList);
+searchButton.addEventListener("click", filterKitten);
