@@ -1,6 +1,36 @@
 "use strict";
 
 
+////SERVER REQUEST 
+
+//1.Crea variables para almacenar la información del usuario de github y la url del endpoint:
+const GITHUB_USER = 'anabollain';
+const SERVER_URL = `https://dev.adalab.es/api/kittens/${GITHUB_USER}`;
+
+//2.Cambia la constante del listado kittenDataList para que sea una vatiable y el listado este vacío.
+
+let kittenDataList = [];
+
+//3. Haz un fetch para obtener el listado los gatitos.
+
+fetch(SERVER_URL, {
+    method: 'GET',
+    headers: {'Content-Type': 'application/json'},
+    })
+    .then((response) => response.json())
+    .then((data)=>{
+        const dataArray = data.results;
+        //console.log(Object.keys(data));
+        for (const item of dataArray){
+            const newKitten = getKittenData(item.image, item.name, item.race, item.desc);
+            kittenDataList.push(newKitten);
+        }
+        console.log(kittenDataList);
+        listElement.innerHTML = renderKittenList(kittenDataList);
+    });
+
+console.log(kittenDataList);
+
 ////DATA SECTION (kittens)
 
 //1. Variable for empty ul element
@@ -51,7 +81,7 @@ const kittenThreeObject = getKittenData(
 
 //5.Crear un array con los objetos creados de cada gatito
 
-const kittenDataList = [kittenOneObject, kittenTwoObject, kittenThreeObject];
+//kittenDataList = [kittenOneObject, kittenTwoObject, kittenThreeObject];
 
 //6.Función para renderizar el conjunto de gatitos a partir de un array con un bucle for...of y meterlos dentro del ul. Usamos la función renderKitten dentro que renderiza cada uno de los gatitos (desde el objeto creado a un li)
 
@@ -60,12 +90,12 @@ function renderKittenList(kittenDataList) {
     for (const kitten of kittenDataList) {
         html += renderKitten(kitten);
     }
-    listElement.innerHTML = html;
+    return html;
 }
 
 //7.Ejecutar función para renderizar el conunto de gatitos dentrol del ul. Ejecutamos la función para que en cada loop recoja los elementos HTML li para cada gato
 
-renderKittenList(kittenDataList);
+//listElement.innerHTML = renderKittenList(kittenDataList);
 
 
 
@@ -229,29 +259,11 @@ function filterKitten(event) {
         const kittenListFiltered = kittenDataList
         .filter((kitten)=>kitten.desc.toLowerCase().includes(descrSearchText))
         .filter((kitten)=>kitten.race.toLowerCase().includes(raceSearchText));
-        //.map((kitten)=> html += renderKitten(kitten));
-        console.log(filterKitten);
-        console.log(html);
-        //debugger;
-        renderKittenList(kittenListFiltered);
-        //console.log(html);
-        //renderKittenList(kittenDataList);
-        }
-        /*for (const kitten of kittenDataList) {
-            if (kitten.desc.toLowerCase().includes(descrSearchText) && kitten.race.toLowerCase().includes(raceSearchText)) {
-                html += renderKitten(kitten);
-            }
-        }*/
-        /*function renderKittenList(kittenDataList) {
-        let html = "";
-        for (const kitten of kittenDataList) {
-        html += renderKitten(kitten);
-        }
-        listElement.innerHTML = html;
-        }*/
-        if (html === ''){
-            html = 'No existe ningún gatito que se ajuste a tu búsqueda.';  
-        }
+        html = renderKittenList(kittenListFiltered);
+    }
+    if (html === ''){
+        html  = 'No existe ningún gatito que se ajuste a tu búsqueda.';  
+    }
          // Inner HTML of the ul = content result form previous conditions
     listElement.innerHTML = html;
 }
