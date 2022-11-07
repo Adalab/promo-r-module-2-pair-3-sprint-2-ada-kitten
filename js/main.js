@@ -65,7 +65,7 @@ function renderKittenList(kittenDataList) {
 
 //7.Ejecutar función para renderizar el conunto de gatitos dentrol del ul. Ejecutamos la función para que en cada loop recoja los elementos HTML li para cada gato
 
-renderKittenList(kittenDataList);
+
 
 
 
@@ -122,6 +122,8 @@ const labelMessageError = document.querySelector(".js-label-error");
 
 //1.Función para añadir un nuevo gatito
 function addNewKittenPlus () {
+    debugger
+    
     const valueDesc = inputDesc.value;
     const valuePhoto = inputPhoto.value;
     const valueName = inputName.value;
@@ -129,13 +131,21 @@ function addNewKittenPlus () {
     const newKittenDataObject = getKittenData(valuePhoto, valueName, valueRace, valueDesc);
     const html = renderKitten(newKittenDataObject);
     listElement.innerHTML += html;
+
     //Ejercicio 2.11
-    //kittenDataList.push(newKittenDataObject); 
+    kittenDataList.push(newKittenDataObject); 
+    cancelNewKitten ();
+    console.log(kittenDataList);
+    
+
+   
+    
 }
 
 //2.Función para validar el formulario
 function addNewKitten(event) {
     event.preventDefault();
+    
     //Create variables for each input value once we have clicked in Añadir
     const valueDesc = inputDesc.value;
     const valuePhoto = inputPhoto.value;
@@ -147,9 +157,11 @@ function addNewKitten(event) {
     } else {
         //Nothing to be done
         addNewKittenPlus ();
+        console.log(kittenDataList);
     }
     //Funciones dentro de funciones (lección 2.6)
     renderRace(inputRace);
+    
 }
 
 //3.Función para mostrar o no la raza (lección 2.6)
@@ -173,10 +185,14 @@ addButton.addEventListener("click", addNewKitten);
 
 //1.Create variable for button Cancelar
 const newCancelButton = document.querySelector(".js-btn-cancel");
-
-//2.Empty input values + hide form with toggle collapsed when clicking in Cancelar
-const cancelNewKitten = (ev) => {
+function handlecancel (ev) {
     ev.preventDefault();
+    cancelNewKitten (); 
+
+}
+//2.Empty input values + hide form with toggle collapsed when clicking in Cancelar
+function cancelNewKitten  (){
+
     inputDesc.value = "";
     inputPhoto.value = "";
     inputName.value = "";
@@ -185,7 +201,7 @@ const cancelNewKitten = (ev) => {
 };
 
 //3. Event listener. Cancelar nuevo gatito (lesson 2.6)
-newCancelButton.addEventListener("click", cancelNewKitten);
+newCancelButton.addEventListener("click", handlecancel);
 
 
 
@@ -233,3 +249,4 @@ searchButton.addEventListener("click", (event) => {
     event.preventDefault();
     filterKitten();
 });
+renderKittenList(kittenDataList);
