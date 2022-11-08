@@ -20,22 +20,26 @@ fetch(SERVER_URL, {
     .then((response) => response.json())
     .then((data)=>{
         const dataArray = data.results;
-        //console.log(Object.keys(data));
+        //let kittenDataNew = [];
         for (const item of dataArray){
             const newKitten = getKittenData(item.image, item.name, item.race, item.desc);
+            //kittenDataNew.push(newKitten);
             kittenDataList.push(newKitten);
         }
-        console.log(kittenDataList);
+        //kittenDataList = kittenDataNew;
+        //console.log(kittenDataNew);
         listElement.innerHTML = renderKittenList(kittenDataList);
     });
 
-console.log(kittenDataList);
+
+    
 
 ////DATA SECTION (kittens)
 
 //1. Variable for empty ul element
 
 const listElement = document.querySelector(".js-list");
+
 
 //2.Función genérica para crear objetos. Convertir cada gatito en un objeto (lección 2.7).
 
