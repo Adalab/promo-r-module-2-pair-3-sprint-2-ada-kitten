@@ -13,6 +13,34 @@ const inputSearchRace = document.querySelector(".js_in_search_race");
 const searchButton = document.querySelector(".js_search_btn");
 const inputSearchDesc = document.querySelector(".js_in_search_desc");
 
+let kittenDataList = [];      
+const GITHUB_USER = 'bellita85';
+const SERVER_URL = `https://dev.adalab.es/api/kittens/${GITHUB_USER}`;       
+const kittenListStored = JSON.parse(localStorage.getItem('kittensList'));
+
+if (kittenListStored !== null){
+    kittenDataList = kittenListStored;
+}else{
+    fetch(SERVER_URL)
+        .then(response => response.json())
+        .then (data=> {
+            let dataArray = data.results;
+            console.log(dataArray);
+            for (const item of dataArray){
+                const newKitten = getKittenData(item.image, item.name, item.race, item.desc);
+                kittenDataList.push(newKitten);
+                console.log ('hola')
+                localStorage.setItem('kittensList', JSON.stringify(kittenDataList));
+        }
+    // console.log(kittenDataList);
+    // listElement.innerHTML = renderKittenList(kittenDataList);
+    renderKittenList (kittenDataList);
+})
+}
+
+
+
+
 //2.Función genérica para crear objetos. Convertir cada gatito en un objeto estandar
 function getKittenData(img, nm, rc, desc) {
     const kittenData = {
@@ -48,26 +76,11 @@ function renderKitten(kittenData) {
 //     "Cariñoso, juguetón, le guta estar tranquilo y que nadie lemoleste. Es una maravilla acariciarle!"
 // );
 //5.Crear un array con los objetos creados de cada gatito
-let kittenDataList = [];      
-const GITHUB_USER = 'bellita85';
-const SERVER_URL = `https://dev.adalab.es/api/kittens/${GITHUB_USER}`;          
 
-fetch(SERVER_URL)
-.then(response => response.json())
-.then (data=> {
-    let dataArray = data.results;
-    console.log(dataArray);
-    for (const item of dataArray){
-        const newKitten = getKittenData(item.image, item.name, item.race, item.desc);
-        kittenDataList.push(newKitten);
-    }
-    console.log(kittenDataList);
-    listElement.innerHTML = renderKittenList(kittenDataList);
-
-})
 
 //6.Función para renderizar el conjunto de gatitos a partir de un array con un bucle for...of y meterlos dentro del ul. Usamos la función renderKitten dentro que renderiza cada uno de los gatitos (desde el objeto creado a un li)
 function renderKittenList(kittenDataList) {
+    debugger
     let html = ""; 
     for (const kitten of kittenDataList) {
         html += renderKitten(kitten);
@@ -97,23 +110,47 @@ function addNewKittenPlus () {
     const valueName = inputName.value;
     const valueRace = inputRace.value;
     const newKittenDataObject = getKittenData(valuePhoto, valueName, valueRace, valueDesc);
-    const html = renderKitten(newKittenDataObject);
-    listElement.innerHTML += html;
+   
+
+    
+    fetch(`https://dev.adalab.es/api/kittens/${GITHUB_USER}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(newKittenDataObject),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if (data.success) {
+            //Completa y/o modifica el código:
+            //Agrega el nuevo gatito al listado
+            //Guarda el listado actualizado en el local stoarge (( get))
+            //Visualiza nuevamente el listado de gatitos
+            //Limpia los valores de cada input
+            const html = renderKitten(newKittenDataObject);
+            listElement.innerHTML += html;
+        } else {
+            //muestra un mensaje de error.
+        }
+    });
     //Ejercicio 2.11
     kittenDataList.push(newKittenDataObject); 
     cancelNewKitten ();   
 }
+
 function addNewKitten(event) {
     event.preventDefault();
     const valueDesc = inputDesc.value;
     const valuePhoto = inputPhoto.value;
     const valueName = inputName.value;
     const valueRace = inputRace.value;
+  
+
     if (valueDesc === "" || valuePhoto === "" || valueName === "") {
         alert("Debe rellenar todos los valores.");
     } else {
         addNewKittenPlus ();
     }
+
     // renderRace(inputRace);  
 }
 // function renderRace(race) {
@@ -142,7 +179,7 @@ function handlecancel (ev) {
 newCancelButton.addEventListener("click", handlecancel);
 //Event listener. Botón BUSCAR
 function filterKitten() {
-    debugger
+
     let html = "";
     const descrSearchText = inputSearchDesc.value.toLowerCase();
     const raceSearchText = inputSearchRace.value.toLowerCase(); 
